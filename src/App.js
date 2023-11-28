@@ -8,7 +8,7 @@ import { OrbitControls, Environment } from '@react-three/drei'
 
 import { ImportGLTF, ImportFBX, getSelection } from './Model'
 
-function Scene({orbitRef}) {
+function Scene() {
   return (
     <>
       <directionalLight position={[10, 10, 10]} intensity={2} />
@@ -20,16 +20,15 @@ function Scene({orbitRef}) {
 }
 
 function App() {
-  const orbitRef = useRef()
   THREE.ColorManagement.enabled = true
 
   return (
     <div id="canvas-container">
       <Canvas shadows dpr={[1, 2]} camera={{ position: [0, 12, 18], fov: 60 }}>
         <Suspense fallback={null}>
-          <Scene orbitRef={orbitRef} />
+          <Scene />
         </Suspense>
-        <OrbitControls ref={orbitRef} />
+        <OrbitControls />
       </Canvas>
     </div>
   )
