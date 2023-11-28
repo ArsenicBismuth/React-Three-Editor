@@ -1,22 +1,21 @@
-import React, { useRef } from "react";
+import React, { useRef, useLayoutEffect } from "react";
 import { useGLTF, useFBX } from "@react-three/drei";
 
 import * as dat from 'dat.gui';
 
 // Importer
 export function ImportGLTF(props) {
-  const { nodes, materials } = useGLTF("/suzanne.gltf")
+  const { scene, materials } = useGLTF('https://vazxmixjsiawhamofees.supabase.co/storage/v1/object/public/models/suzanne-high-poly/model.gltf')
+  useLayoutEffect(() => {
+    scene.traverse((obj) => obj.isMesh && (obj.receiveShadow = obj.castShadow = true))
+    materials.default.color.set('orange')
+    materials.default.roughness = 0
+  })
   return (
-    <group {...props} dispose={null}>
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.Suzanne.geometry}
-        material={nodes.Suzanne.material}
-        position={[0, 0.2, 0]}
-      />
-    </group>
-  );
+    <primitive object={scene} {...props} 
+      position={[0, -10, 0]}
+    />
+  )
 }
 
 export function ImportFBX(props) {
@@ -30,7 +29,8 @@ export function ImportFBX(props) {
   return (
     <primitive object={fbx}
       {...props}
-      scale={0.01}
+      position={[0, -10, 0]}
+      scale={0.1}
       ref={Selected}>
     </primitive>
   )
@@ -68,7 +68,6 @@ function handleColorChange( color ) {
 function UserInterface() {
   const gui = new dat.GUI()
   const mat = getMaterial()
-  console.log(mat)
 
   gui.addColor( {"color": mat.color.getHex()}, 'color').onChange( handleColorChange( mat.color ) )
   gui.addColor( {"emissive": mat.emissive.getHex()}, 'emissive').onChange( handleColorChange( mat.emissive ) )
