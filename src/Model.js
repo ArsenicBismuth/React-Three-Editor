@@ -6,7 +6,7 @@ import React, { useRef } from "react";
 import { useGLTF, useFBX } from "@react-three/drei";
 
 export function ImportGLTF(props) {
-  const { nodes, materials } = useGLTF("/suzanne.gltf");
+  const { nodes, materials } = useGLTF("/suzanne.gltf")
   return (
     <group {...props} dispose={null}>
       <mesh
@@ -21,7 +21,9 @@ export function ImportGLTF(props) {
 }
 
 export function ImportFBX(props) {
-  const fbx = useFBX("/char.fbx");
+  const fbx = useFBX("/char.fbx")
+  Models.push(fbx)
+  
   return (
     <primitive object={fbx}
       {...props}
@@ -29,3 +31,5 @@ export function ImportFBX(props) {
     />
   );
 }
+
+export const Models = [];
