@@ -1,5 +1,5 @@
 import React, { useRef, useLayoutEffect } from "react";
-import { useGLTF, useFBX } from "@react-three/drei";
+import { useGLTF, useFBX, useTexture } from "@react-three/drei";
 
 import * as THREE from 'three'
 import * as dat from 'dat.gui';
@@ -21,11 +21,14 @@ export function ImportGLTF(props) {
 
 export function ImportFBX(props) {
   const fbx = useFBX("/models/char.fbx")
+  const newMat = LoadMaterial()
+
   Selected = useRef()
 
-  setTimeout(() => {
-    UserInterface()
-  }, 2000)
+  useLayoutEffect(() => {
+    swapMaterial(newMat)
+    userInterface()
+  })
 
   return (
     <primitive object={fbx}
@@ -67,9 +70,13 @@ function handleColorChange( color ) {
   }
 }
 
-function UserInterface() {
+function userInterface() {
   const gui = new dat.GUI()
-  const mat = replaceMaterial()
+
+  // Force standard material
+  let mat = getMaterial()
+  if (mat.type !== "MeshStandardMaterial")
+    mat = toStandardMaterial()
 
   gui.addColor( {"color": mat.color.getHex()}, 'color').onChange( handleColorChange( mat.color ) )
   gui.addColor( {"emissive": mat.emissive.getHex()}, 'emissive').onChange( handleColorChange( mat.emissive ) )
@@ -83,17 +90,40 @@ function UserInterface() {
 
 
 // Asset management
-function replaceMaterial() {
+function toStandardMaterial() {
   // Swap from arbitrary material to standard material (more realistic)
+  const newMat = new THREE.MeshStandardMaterial()
+  swapMaterial(newMat)
+
+  return newMat
+}
+
+function swapMaterial(newMat) {
   const obj = getSelection()
   if (!obj) return null
-
-  const newMat = new THREE.MeshStandardMaterial()
+  
   obj.traverse((o) => {
     if (!o.isMesh) return
     newMat.map = o.material.map
     o.material = newMat
   })
+}
 
-  return newMat
+function LoadMaterial(dir = "/paving/") {
+  const baseDir = "./materials" + dir
+  const [map, normalMap, roughnessMap, metalnessMap] = useTexture([ 
+    baseDir + 'Color.jpg', 
+    baseDir + 'NormalGL.jpg', 
+    baseDir + 'Roughness.jpg', 
+    // baseDir + 'Metalness.jpg',
+  ])
+
+  const material = new THREE.MeshStandardMaterial({
+    map,
+    normalMap,
+    roughnessMap,
+    metalnessMap
+  })
+
+  return material
 }
