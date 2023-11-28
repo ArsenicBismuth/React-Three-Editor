@@ -9,9 +9,7 @@ import * as THREE from 'three'
 import { Canvas, useThree } from '@react-three/fiber'
 import { OrbitControls, Stage } from '@react-three/drei'
 
-import { ImportGLTF, ImportFBX, Models } from './Model'
-
-THREE.ColorManagement.enabled = true
+import { ImportGLTF, ImportFBX, getSelection } from './Model'
 
 function Scene() {
   const ref = useRef()
@@ -25,12 +23,12 @@ function Scene() {
   )
 }
 
-function ColorGUI() {
+function UserInterface() {
   const gui = new dat.GUI()
   gui.addColor({ color: '#000000' }, 'color')
     .listen()
     .onChange((e) => {
-      Models[0].traverse((o) => {
+      getSelection().traverse((o) => {
         if (o.isMesh) o.material.color.setStyle(e);
       })
     })
@@ -38,6 +36,7 @@ function ColorGUI() {
 
 function App() {
   const ref = useRef()
+  THREE.ColorManagement.enabled = true
 
   return (
     <div id="canvas-container">
@@ -46,7 +45,7 @@ function App() {
           <Scene/>
         </Suspense>
         <OrbitControls ref={ref} />
-        <ColorGUI />
+        <UserInterface />
       </Canvas>
     </div>
   )
