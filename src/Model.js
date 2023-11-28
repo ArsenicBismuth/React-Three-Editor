@@ -18,13 +18,15 @@ export function ImportGLTF(props) {
 }
 
 export function ImportFBX(props) {
+  // Load all assets (including alternative materials)
   const fbx = useFBX("/models/char.fbx")
-  const newMat = LoadMaterial()
+  LoadMaterial("paving")
+  // TODO: Load only on-demand, and dispose assets when not in use
 
   Selected = useRef()
 
   useLayoutEffect(() => {
-    swapMaterial(newMat)
+    MatDefault = toStandardMaterial()
     userInterface()
   })
 
@@ -85,16 +87,37 @@ function userInterface() {
   gui.add( mat, 'metalness', 0, 1 )
   gui.add( mat, 'displacementScale', 0, 1 )
   gui.add( mat, 'aoMapIntensity', 0, 2 )
+
+  // Material swapper
+  const keys = ['default', 'paving']
+  gui.add( {"material": 'default'}, 'material', keys ).onChange( menuSwapMaterial )
+
 }
 
 
 // Asset management
+let MatDefault = null
+let MatKey = 'default'
+const MatLibrary = {}
+
 function toStandardMaterial() {
   // Swap from arbitrary material to standard material (more realistic)
   const newMat = new THREE.MeshStandardMaterial()
   swapMaterial(newMat)
 
   return newMat
+}
+
+function menuSwapMaterial(key) {
+  if (MatKey === key) return
+  MatKey = key
+
+  if (key === 'default') {
+    swapMaterial(MatDefault)
+    return
+  }
+
+  swapMaterial(MatLibrary[key])
 }
 
 function swapMaterial(newMat) {
@@ -108,8 +131,8 @@ function swapMaterial(newMat) {
   })
 }
 
-function LoadMaterial(dir = "/paving/") {
-  const baseDir = "./materials" + dir
+function LoadMaterial(dir = "paving") {
+  const baseDir = "./materials/" + dir + "/"
   const [map, normalMap, roughnessMap, aoMap, displacementMap, metalnessMap] = useTexture([ 
     baseDir + 'Color.jpg', 
     baseDir + 'NormalGL.jpg', 
@@ -127,6 +150,9 @@ function LoadMaterial(dir = "/paving/") {
     displacementMap,
     metalnessMap
   })
+
+  // Store material in library
+  MatLibrary[dir] = material
 
   return material
 }
