@@ -21,6 +21,8 @@ export function ImportFBX(props) {
   // Load all assets (including alternative materials)
   const fbx = useFBX("/models/char.fbx")
   LoadMaterial("paving")
+  LoadMaterial("rock")
+  LoadMaterial("plate")
   // TODO: Load only on-demand, and dispose assets when not in use
 
   Selected = useRef()
@@ -89,7 +91,7 @@ function userInterface() {
   gui.add( mat, 'aoMapIntensity', 0, 2 )
 
   // Material swapper
-  const keys = ['default', 'paving']
+  const keys = ['default', 'paving', 'rock', 'plate']
   gui.add( {"material": 'default'}, 'material', keys ).onChange( menuSwapMaterial )
 
 }
@@ -139,7 +141,7 @@ function LoadMaterial(dir = "paving") {
     baseDir + 'Roughness.jpg',
     baseDir + 'AmbientOcclusion.jpg',
     baseDir + 'Displacement.jpg',
-    // baseDir + 'Metalness.jpg',
+    baseDir + 'Metalness.jpg',
   ])
 
   const material = new THREE.MeshStandardMaterial({
