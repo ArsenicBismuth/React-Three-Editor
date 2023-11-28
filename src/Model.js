@@ -26,6 +26,7 @@ export function ImportFBX(props) {
   // TODO: Load only on-demand, and dispose assets when not in use
 
   Selected = useRef()
+  console.log(Selected)
 
   useLayoutEffect(() => {
     MatDefault = toStandardMaterial()
@@ -71,8 +72,12 @@ function handleColorChange( color ) {
   }
 }
 
+let GUI = null
 function userInterface() {
+  // Hacky way to prevent multiple GUIs
+  if (GUI) GUI.destroy()
   const gui = new dat.GUI()
+  GUI = gui
 
   // Force standard material
   let mat = getMaterial()
@@ -92,7 +97,7 @@ function userInterface() {
 
   // Material swapper
   const keys = ['default', 'paving', 'rock', 'plate']
-  gui.add( {"material": 'default'}, 'material', keys ).onChange( menuSwapMaterial )
+  gui.add( {"material": MatKey}, 'material', keys ).onChange( menuSwapMaterial )
 
 }
 
@@ -128,8 +133,10 @@ function swapMaterial(newMat) {
   
   obj.traverse((o) => {
     if (!o.isMesh) return
-    newMat.map = o.material.map
+    if (newMat.map == null) newMat.map = o.material.map
     o.material = newMat
+
+    userInterface()
   })
 }
 
