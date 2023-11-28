@@ -1,7 +1,6 @@
 import './App.css';
 
 import React, { Suspense, useRef } from 'react'
-import { createRoot } from 'react-dom/client'
 
 import * as dat from 'dat.gui';
 
@@ -11,10 +10,9 @@ import { OrbitControls, Stage } from '@react-three/drei'
 
 import { ImportGLTF, ImportFBX, getSelection } from './Model'
 
-function Scene() {
-  const ref = useRef()
+function Scene({orbitRef}) {
   return (
-    <Stage controls={ref} preset="rembrandt" intensity={0}  environment="city">
+    <Stage controls={orbitRef} preset="rembrandt" intensity={1}  environment="city">
     false
       <directionalLight position={[10, 10, 10]} intensity={2} />
       <ImportFBX />
@@ -35,16 +33,16 @@ function UserInterface() {
 }
 
 function App() {
-  const ref = useRef()
+  const orbitRef = useRef()
   THREE.ColorManagement.enabled = true
 
   return (
     <div id="canvas-container">
       <Canvas shadows dpr={[1, 2]} camera={{ fov: 50 }}>
         <Suspense fallback={null}>
-          <Scene/>
+          <Scene orbitRef={orbitRef}/>
         </Suspense>
-        <OrbitControls ref={ref} />
+        <OrbitControls ref={orbitRef} />
         <UserInterface />
       </Canvas>
     </div>
