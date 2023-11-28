@@ -28,7 +28,7 @@ function App() {
         <Suspense fallback={null}>
           <Scene />
         </Suspense>
-        <OrbitControls />
+        <OrbitControls target={[0, 10, 0]} />
       </Canvas>
     </div>
   )

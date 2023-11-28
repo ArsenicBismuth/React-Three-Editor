@@ -13,9 +13,7 @@ export function ImportGLTF(props) {
     materials[""].roughness = 0
   })
   return (
-    <primitive object={scene} {...props} 
-      position={[0, -10, 0]}
-    />
+    <primitive object={scene} {...props} />
   )
 }
 
@@ -33,7 +31,6 @@ export function ImportFBX(props) {
   return (
     <primitive object={fbx}
       {...props}
-      position={[0, -10, 0]}
       scale={0.1}
       ref={Selected}>
     </primitive>
@@ -86,6 +83,8 @@ function userInterface() {
   gui.add( mat, 'opacity', 0, 1 ).step( 0.01 )
   gui.add( mat, 'roughness', 0, 1 )
   gui.add( mat, 'metalness', 0, 1 )
+  gui.add( mat, 'displacementScale', 0, 1 )
+  gui.add( mat, 'aoMapIntensity', 0, 2 )
 }
 
 
@@ -111,10 +110,12 @@ function swapMaterial(newMat) {
 
 function LoadMaterial(dir = "/paving/") {
   const baseDir = "./materials" + dir
-  const [map, normalMap, roughnessMap, metalnessMap] = useTexture([ 
+  const [map, normalMap, roughnessMap, aoMap, displacementMap, metalnessMap] = useTexture([ 
     baseDir + 'Color.jpg', 
     baseDir + 'NormalGL.jpg', 
-    baseDir + 'Roughness.jpg', 
+    baseDir + 'Roughness.jpg',
+    baseDir + 'AmbientOcclusion.jpg',
+    baseDir + 'Displacement.jpg',
     // baseDir + 'Metalness.jpg',
   ])
 
@@ -122,6 +123,8 @@ function LoadMaterial(dir = "/paving/") {
     map,
     normalMap,
     roughnessMap,
+    aoMap,
+    displacementMap,
     metalnessMap
   })
 
